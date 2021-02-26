@@ -1,5 +1,6 @@
 package dev.psuchanek.models.data
 
+import dev.psuchanek.models.collections.User
 import org.bson.BsonObjectId
 import org.bson.codecs.pojo.annotations.BsonId
 
@@ -11,5 +12,6 @@ data class Flight(
     val duration: String,
     val typeOfFlight: String,
     val gliderFlown: Glider,
-    val distanceFlown: Float = 0.0f
+    val distanceFlown: Float = 0.0f,
+    val owner: String
 )
