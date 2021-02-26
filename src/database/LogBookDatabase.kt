@@ -4,7 +4,6 @@ package dev.psuchanek.database
 import dev.psuchanek.models.collections.User
 import dev.psuchanek.models.data.Flight
 import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.coroutine.toList
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 
@@ -19,6 +18,11 @@ suspend fun registerUser(user: User): Boolean {
 
 suspend fun checkIfUserExists(email: String): Boolean {
     return userCollection.findOne(User::email eq email) != null
+}
+
+suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boolean {
+    val actualPassword = userCollection.findOne(User::email eq email)?.password ?: return false
+    return actualPassword == passwordToCheck
 }
 
 suspend fun getFlightsForUser(email: String): List<Flight> {
