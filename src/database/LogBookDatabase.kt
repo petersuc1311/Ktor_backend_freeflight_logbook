@@ -1,6 +1,7 @@
 package dev.psuchanek.database
 
 
+import com.mongodb.client.model.DeleteOptions
 import dev.psuchanek.models.collections.User
 import dev.psuchanek.models.data.Flight
 import org.litote.kmongo.coroutine.coroutine
@@ -14,6 +15,10 @@ private val userCollection = database.getCollection<User>()
 
 suspend fun registerUser(user: User): Boolean {
     return userCollection.insertOne(user).wasAcknowledged()
+}
+
+suspend fun deleteAccount(user: User): Boolean {
+    return userCollection.deleteOneById(user.id).wasAcknowledged()
 }
 
 suspend fun checkIfUserExists(email: String): Boolean {
