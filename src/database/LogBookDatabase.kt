@@ -5,6 +5,7 @@ import com.mongodb.client.model.DeleteOptions
 import dev.psuchanek.models.collections.DeletedUser
 import dev.psuchanek.models.collections.User
 import dev.psuchanek.models.data.Flight
+import dev.psuchanek.security.checkHashForPassword
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
@@ -42,7 +43,7 @@ suspend fun checkIfUserExistsInDeletedList(email: String): Boolean {
 
 suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boolean {
     val actualPassword = userCollection.findOne(User::email eq email)?.password ?: return false
-    return actualPassword == passwordToCheck
+    return checkHashForPassword(passwordToCheck, actualPassword)
 }
 
 suspend fun getFlightsForUser(email: String): List<Flight> {

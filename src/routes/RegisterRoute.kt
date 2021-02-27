@@ -7,6 +7,7 @@ import dev.psuchanek.database.registerUser
 import dev.psuchanek.models.collections.User
 import dev.psuchanek.models.requests.AccountRequest
 import dev.psuchanek.models.responses.SimpleResponse
+import dev.psuchanek.security.getHashWithSalt
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.features.ContentTransformationException
@@ -34,7 +35,7 @@ fun Route.registerRoute() {
                     deleteEmailFromDeletedUserList(request.email)
                 }
                 //TODO: add hashing with salt to the password for security
-                if (registerUser(User(request.email, request.password))) {
+                if (registerUser(User(request.email, getHashWithSalt(request.password)))) {
                     call.respond(HttpStatusCode.OK, SimpleResponse(true, "Account successfully created."))
                 } else {
                     call.respond(HttpStatusCode.OK, SimpleResponse(false, "An unknown error occurred."))
