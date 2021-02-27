@@ -1,10 +1,10 @@
 package dev.psuchanek.routes
 
+import dev.psuchanek.database.checkIfUserExists
 import dev.psuchanek.database.checkPasswordForEmail
 import dev.psuchanek.models.requests.AccountRequest
 import dev.psuchanek.models.responses.SimpleResponse
 import io.ktor.application.*
-import io.ktor.features.*
 import io.ktor.features.ContentTransformationException
 import io.ktor.http.*
 import io.ktor.request.*
@@ -21,13 +21,22 @@ fun Route.loginRoute() {
                 return@post
             }
 
-            val isPasswordCorrect = checkPasswordForEmail(request.email, request.password)
-            if (!isPasswordCorrect) {
-                call.respond(HttpStatusCode.OK, SimpleResponse(false, "The email or password is incorrect."))
-                return@post
+            val emailExists = checkIfUserExists(request.email)
+            println("Result for email Exists: $emailExists")
+            if(emailExists) {
+                val isPasswordCorrect = checkPasswordForEmail(request.email, request.password)
+                println("Result for isPasswordCorrect: $isPasswordCorrect")
+                if (!isPasswordCorrect) {
+                    call.respond(HttpStatusCode.OK, SimpleResponse(false, "The email or password is incorrect."))
+                    return@post
+                } else {
+                    call.respond(HttpStatusCode.OK, SimpleResponse(true, "Login successful."))
+                }
             } else {
-                call.respond(HttpStatusCode.OK, SimpleResponse(true, "Login successful."))
+                call.respond(HttpStatusCode.OK, SimpleResponse(false, "No account with that email exists. Please create an account."))
             }
+
+
         }
     }
 }

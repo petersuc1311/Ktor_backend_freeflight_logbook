@@ -1,6 +1,8 @@
 package dev.psuchanek
 
 import dev.psuchanek.database.checkPasswordForEmail
+import dev.psuchanek.routes.deleteAccountRoutes
+import dev.psuchanek.routes.flightRoutes
 import dev.psuchanek.routes.loginRoute
 import dev.psuchanek.routes.registerRoute
 import io.ktor.application.*
@@ -27,6 +29,8 @@ fun Application.module(testing: Boolean = false) {
     install(Routing) {
         registerRoute()
         loginRoute()
+        deleteAccountRoutes()
+        flightRoutes()
     }
 }
 

@@ -2,6 +2,7 @@ package dev.psuchanek.database
 
 
 import com.mongodb.client.model.DeleteOptions
+import dev.psuchanek.models.collections.DeletedUser
 import dev.psuchanek.models.collections.User
 import dev.psuchanek.models.data.Flight
 import org.litote.kmongo.coroutine.coroutine
@@ -12,17 +13,31 @@ private val client = KMongo.createClient().coroutine
 private val database = client.getDatabase("logbook_database")
 private val flightCollection = database.getCollection<Flight>()
 private val userCollection = database.getCollection<User>()
+private val deletedUserCollection = database.getCollection<DeletedUser>()
 
 suspend fun registerUser(user: User): Boolean {
     return userCollection.insertOne(user).wasAcknowledged()
 }
 
-suspend fun deleteAccount(user: User): Boolean {
-    return userCollection.deleteOneById(user.id).wasAcknowledged()
+suspend fun deleteAccount(email: String): Boolean {
+    val user = userCollection.findOne(User::email eq email)
+    println("Result for deleted Account: $user")
+    user?.let {
+        deletedUserCollection.insertOne(DeletedUser(user.email))
+        return userCollection.deleteOneById(user.id).wasAcknowledged()
+    } ?: return false
+}
+
+suspend fun deleteEmailFromDeletedUserList(email: String) {
+    deletedUserCollection.deleteOne(DeletedUser::email eq email)
 }
 
 suspend fun checkIfUserExists(email: String): Boolean {
     return userCollection.findOne(User::email eq email) != null
+}
+
+suspend fun checkIfUserExistsInDeletedList(email: String): Boolean {
+    return deletedUserCollection.findOne(DeletedUser::email eq email) != null
 }
 
 suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boolean {
