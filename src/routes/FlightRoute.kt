@@ -1,5 +1,6 @@
 package dev.psuchanek.routes
 
+import dev.psuchanek.database.deleteAllFlights
 import dev.psuchanek.database.getFlightsForUser
 import dev.psuchanek.database.saveFlight
 import dev.psuchanek.models.data.Flight
@@ -49,6 +50,15 @@ fun Route.flightRoutes() {
                         SimpleResponse(false, "Something went wrong. Flight record not received.")
                     )
                 }
+            }
+        }
+    }
+
+    route("/deleteAllFlights") {
+        authenticate {
+            post {
+                deleteAllFlights()
+                call.respond(HttpStatusCode.OK, SimpleResponse(true, "All records have been deleted."))
             }
         }
     }

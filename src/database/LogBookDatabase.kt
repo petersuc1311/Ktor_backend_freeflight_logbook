@@ -58,3 +58,14 @@ suspend fun saveFlight(flight: Flight): Boolean {
         flightCollection.insertOne(flight).wasAcknowledged()
     }
 }
+
+suspend fun deleteFlight(flightID: String): Boolean {
+    val flight = flightCollection.findOneById(flightID)
+    flight?.let {
+        return flightCollection.deleteOneById(flightID).wasAcknowledged()
+    } ?: return false
+}
+
+suspend fun deleteAllFlights() {
+    flightCollection.drop()
+}
